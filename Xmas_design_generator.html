@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Christmas Graphic Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            color: #b22222;
+            font-size: 2.5rem;
+        }
+
+        .upload-container {
+            text-align: center;
+            background-color: #fff;
+            border: 2px dashed #ddd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .upload-container:hover {
+            background-color: #f9f9f9;
+        }
+
+        .upload-container input[type="file"] {
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        #generate-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 1rem;
+            color: white;
+            background-color: #b22222;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #generate-btn:hover {
+            background-color: #a52a2a;
+        }
+
+        .output-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .output-container img {
+            max-width: 100%;
+            height: auto;
+            border: 5px solid #ddd;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Create Your Personalized Christmas Graphic</h1>
+        <p>Upload your picture and receive a festive graphic design!</p>
+    </header>
+
+    <div class="upload-container">
+        <form id="upload-form" enctype="multipart/form-data">
+            <input type="file" id="image-upload" accept="image/*" required>
+            <br>
+            <button type="button" id="generate-btn">Generate Graphic</button>
+        </form>
+    </div>
+
+    <div class="output-container" id="output-container">
+        <h2>Your Christmas Design:</h2>
+        <img id="generated-image" src="" alt="Generated Christmas Graphic" hidden>
+    </div>
+
+    <script>
+        document.getElementById('generate-btn').addEventListener('click', () => {
+            const fileInput = document.getElementById('image-upload');
+            const outputContainer = document.getElementById('output-container');
+            const generatedImage = document.getElementById('generated-image');
+
+            if (!fileInput.files[0]) {
+                alert('Please upload a picture to continue.');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = () => {
+                const base64Image = reader.result;
+
+                // Create a canvas to overlay the design pattern
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                const image = new Image();
+                const overlay = new Image();
+
+                overlay.src = 'overlay-design.png'; // Replace with your Christmas overlay image
+                image.src = base64Image;
+
+                image.onload = () => {
+                    canvas.width = image.width;
+                    canvas.height = image.height;
+
+                    context.drawImage(image, 0, 0);
+
+                    overlay.onload = () => {
+                        context.drawImage(overlay, 0, 0, canvas.width, canvas.height);
+                        const resultImage = canvas.toDataURL('image/png');
+
+                        generatedImage.src = resultImage;
+                        generatedImage.hidden = false;
+                    };
+                };
+            };
+
+            reader.readAsDataURL(file);
+        });
+    </script>
+</body>
+</html>
